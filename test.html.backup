@@ -1,0 +1,231 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css"> 
+    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
+    </head>
+    <body>
+	<center>
+	<h5>Machine learning model selection</h5>
+
+	<div id="dataA" style="width:600px; height:100px;" ></div>
+	<h5>Flow template selection</h5>
+	<div id="dataB" style="width:600px; height:100px;"></div>
+
+	<h5>Optimization selection</h5>
+	<div id="dataC" style="width:600px; height:100px;"></div>
+
+
+	<h5>debug</h5>
+	<br>
+	<div id="dataD" style="width:600px; height:200px;"></div>
+
+        <script type="text/javascript" charset="utf-8">
+	
+	var training_method=[{ id:1, title:"SGD linear", package:"scikit-learn", pic:"sl.jpg"},
+			{ id:2, title:"SGD non-linear", package:"scikit-learn", pic:"sl.jpg"},
+			{ id:3, title:"tensorflow DNN", package:"tensorflow", pic:"tf.jpg"}];
+
+	var init_flow=[{id:1, flow:"Training"},
+		       {id:2, flow:"Prediction"},
+		       {id:3, flow:"Set normalize"},
+		       {id:4, flow:"Clean model"}];
+
+	var optimization_method=[{id:1, method:"Brute force"},
+		       {id:2, method:"Basin hopping"}];
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Model selection",
+		container:"dataA",
+		select:true,
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:3, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'><img src='#pic#'></img> #title#</div> package: #package#",
+		data:training_method
+	}
+	);
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Flow selection",
+		container:"dataB",
+		select:"multiselect",
+		multiselect:"touch",
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:4, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'>#flow#</div>",
+		data:init_flow
+	}
+	);
+
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Optimization selection",
+		container:"dataC",
+		select:true,
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:2, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'>#method#</div>",
+		data:optimization_method
+	}
+	);
+
+
+	var previous_pop_name='';
+	$$('Model selection').attachEvent('onSelectChange', function(id){
+				webix.message("Training method: "+training_method[id-1].title+" is selected!");
+
+
+
+			if (previous_pop_name!='')
+			{
+				$$(previous_pop_name).close()	
+			}
+
+			var pop_name = "pop" + id;
+			previous_pop_name=pop_name;
+
+			var sl_prop={view:"property",  id:"sets", width:300,
+			elements:[
+			{ label:training_method[id-1].title, type:"label" },
+			{ label:"Model name", type:"text", id:"model_name", value: "testsgd"},
+			]};
+
+			var tf_prop={view:"property",  id:"sets", width:300,
+			elements:[
+			{ label:training_method[id-1].title, type:"label" },
+			{ label:"Model name", type:"text", id:"model_name", value: "testtf"},
+			{ label:"class number", type:"text", id:"class_num", value: 5},
+			{ label:"hidden layer", type:"text", id:"layer", value: [10,20]},
+			]};
+			
+			var prop_table;
+			if(id == 3)
+			{prop_table=tf_prop;}
+			else
+			{prop_table=sl_prop;}
+
+
+
+			webix.ui({
+				view:"window",move:true,
+				id:pop_name,
+				height:250,
+				width:350,
+				position:"center",
+			    head:{
+					view:"toolbar", cols:[
+						{view:"label", label: "Model Property" },
+						{view:"button", label: 'Close', width: 100, align: 'right', click:"$$('" + pop_name +"').close();previous_pop_name='';"}
+						]
+				},
+				body:prop_table
+				}).show({x:1300 - ((3-id)*100), y:60});
+
+
+//			var test = "===" + JSON.stringify($$(pop_name).getBody().getItem("model_name")) + "==="
+			//var test = "===" + JSON.stringify($$(pop_name).getBody()) + "==="
+			//var test = JSON.stringify($$(pop_name).getBody().getItem("model_name").value);
+			var test = '';
+//			$$(pop_name).getBody().setValues({model_name:"1111111111"});
+			for (i = 0; i < $$(pop_name).config.body.elements.length; i++) {
+    				test += JSON.stringify($$(pop_name).config.body.elements[i]);
+			}
+
+			$$('text1').setValue(test);
+
+			});
+
+
+
+
+
+// optimization click function
+	var previous_op_pop_name='';
+	$$('Optimization selection').attachEvent("onSelectChange", function(id){
+			if (previous_op_pop_name!='')
+			{
+				$$(previous_op_pop_name).close()	
+			}
+
+			var pop_name = "op_pop" + id;
+			previous_op_pop_name=pop_name;
+
+			var brute_prop={view:"property",  id:"sets", width:300,
+			elements:[
+			{ label:optimization_method[id-1].method, type:"label" },
+			{ label:"bound min", type:"text", id:"bound_min", value: "0,0,0,0"},
+			{ label:"bound max", type:"text", id:"bound_max", value: "1,1,1,99"}
+
+			]};
+
+			var basin_prop={view:"property",  id:"sets", width:300,
+			elements:[
+			{ label:optimization_method[id-1].method, type:"label" },
+			{ label:"bound min", type:"text", id:"bound_min", value: "0,0,0,0"},
+			{ label:"bound max", type:"text", id:"bound_max", value: "1,1,1,99"},
+			{ label:"minimizer", type:"select", options:[ "L-BFGS-B", "TNC" ,"SLSQP"], value:"L-BFGS-B", id:"minimizer"},
+			{ label:"init value", type:"text", id:"init_value_max", value: "0.5,0.5,0.5,45"},
+			{ label:"tolerance value", type:"text", id:"tolerance", value: "1e0"},
+			{ label:"iteration", type:"text", id:"iter", value: "100"}
+
+			]};
+			
+			var prop_table;
+			if(id == 2)
+			{prop_table=basin_prop;}
+			else
+			{prop_table=brute_prop;}
+
+			webix.ui({
+				view:"window",move:true,
+				id:pop_name,
+				height:250,
+				width:350,
+				position:"center",
+			 	head:{
+					view:"toolbar",css:"my_style", cols:[
+						{view:"label", label: "Optimization Property" },
+						{view:"button", label: 'Close', width: 100, align: 'right', click:"$$('" + pop_name +"').close();previous_op_pop_name='';"}]
+
+				}
+				,	
+				body:prop_table	}).show({x:1300 - ((3-id)*100), y:460 });
+
+
+});
+	
+var richtext = webix.ui({
+    view: "richtext",
+    container:"dataD",
+    id:"text1",
+    label:"Mytext",
+    labelPosition:"top"
+});
+
+
+
+
+
+
+        </script>
+	</center>
+    </body>
+</html>

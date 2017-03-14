@@ -1,0 +1,1 @@
+{"selected_model":"tensorflow DNN","model_prop":"{\"Model name\":\"testtf\",\"class number\":\"5\",\"hidden layer\":\"[10,20]\"}","selected_flow":["2","1"],"selected_opt":"1","opt_prop":"{\"method\":\"brute force\",\"bound min\":\"0,0,0,0\",\"bound max\":\"1,1,1,99\"}","target_server":"127.0.0.1"}
