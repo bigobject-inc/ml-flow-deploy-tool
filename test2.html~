@@ -1,0 +1,369 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css"> 
+    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
+    </head>
+
+    <body>
+	<center>
+	<font color=#F06050>
+
+	<h5><div id="dataA" style="width:600px; height:100px;text-align:left;" >Machine learning model selection</div></h5>
+	<br>
+	<h5>
+	<div id="dataB" style="width:600px; height:100px;text-align:left;">Flow template selection</div>
+	</h5>
+	<br>
+	<h5>
+	<div id="dataC" style="width:600px; height:100px;text-align:left;">Optimization selection</div>
+	</h5>
+
+	<br>
+	<h5>
+	<div id="dataD" style="width:600px; height:200px;text-align:left;">Deployment</div>
+	</h5>
+	
+	<br>
+	<h5>
+	<div id="dataE" style="width:600px;height:200px;text-align:left;">Debug</div>
+	</h5>
+	<br>
+	<br>
+	</font>
+        <script type="text/javascript" charset="utf-8">
+	
+	var training_method=[{ id:1, title:"SGD linear", package:"scikit-learn", pic:"sl.jpg"},
+			{ id:2, title:"SGD non-linear", package:"scikit-learn", pic:"sl.jpg"},
+			{ id:3, title:"tensorflow DNN", package:"tensorflow", pic:"tf.jpg"}];
+
+	var init_flow=[{id:1, flow:"Training"},
+		       {id:2, flow:"Prediction"},
+		       {id:3, flow:"Set normalize"},
+		       {id:4, flow:"Clean model"}];
+
+	var optimization_method=[{id:1, method:"Brute force"},
+		       {id:2, method:"Basin hopping"}];
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Model selection",
+		container:"dataA",
+		select:true,
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:3, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'><img src='#pic#'></img> #title#</div> package: #package#",
+		data:training_method
+	}
+	);
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Flow selection",
+		container:"dataB",
+		select:"multiselect",
+		multiselect:"touch",
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:4, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'>#flow#</div>",
+		data:init_flow
+	}
+	);
+
+webix.ui(
+	{
+		view:"dataview", 
+		id:"Optimization selection",
+		container:"dataC",
+		select:true,
+		type: {
+			width:"auto", 
+			height:"auto"
+		},
+		xCount:2, yCount:1,
+
+		scroll:false,
+		template:"<div class='webix_strong'>#method#</div>",
+		data:optimization_method
+	}
+	);
+
+	
+	var sl_prop=[
+	{ label:"property", type:"label" },
+	{ label:"Model name", type:"text", id:"sl_model_name", value:"testsgd"},
+	{ label:"Normalization" , type:"checkbox", id:"sl_checkbox" , value:true}
+	];
+	
+	//var save_value=["testtf",'5','[10,20]'];
+	var tf_prop=[
+	{ label:"property", type:"label" },
+	{ label:"Model name", type:"text", id:"tf_model_name", value: "testtf"},
+	{ label:"class number", type:"text", id:"class_num", value: '5'},
+	{ label:"hidden layer", type:"text", id:"layer", value: '[10,20]'},
+	{ label:"Normalization" , type:"checkbox", id:"sl_checkbox" , value:true}
+	];
+
+	webix.ui({
+		view:"window",move:true,
+		id:"method_win",
+		height:250,
+		width:350,
+		position:"center",
+	    	head:{
+			view:"toolbar", cols:[
+				{view:"label", id:"win_label", label: "Model Property" },
+				{view:"button", label: 'Save', width: 50, align: 'right', click:"$$('method_win').hide();"},
+				{view:"button", label: 'Close', width: 50, align: 'right', click:"$$('method_win').hide();"}
+
+				]
+		},
+		body:{view:"property",  id:"prop_body", width:300,elements:[]}
+
+		});
+
+
+	$$('prop_body').attachEvent("onAfterEditStop", function(state, editor, ignoreUpdate){
+	    if(state.value != state.old){
+		
+	        webix.message("Cell value " + editor.id  + " was changed")
+	    }  
+	});
+
+	$$('Model selection').attachEvent('onSelectChange', function(id){
+			webix.message("Training method: "+training_method[id-1].title+" is selected!");
+
+			$$('method_win').show({x:1300, y:60});
+			$$('win_label').define("label",training_method[id-1].title);
+			$$('win_label').refresh();
+			if(id == 3)
+			{
+//				$$('prop_body').define("elements",[
+//					{ label:"", type:"label" },
+//					{ label:"Model name", type:"text", id:"model_name", value: "testtf"},
+//					{ label:"class number", type:"text", id:"class_num", value: 5},
+//					{ label:"hidden layer", type:"text", id:"layer", value: [10,20]},
+//				]);
+				$$('prop_body').define("elements",tf_prop);
+				$$('prop_body').refresh();
+			}
+			else
+			{
+
+				$$('prop_body').define("elements",sl_prop);
+//				$$('prop_body').define("elements",tf_prop);
+				$$('prop_body').refresh();
+			}
+//			$$('method_win').config.head.cols[0].label = "sssss";
+//			$$('method_win').show({x:1300 - ((3-id)*100), y:60});
+//			$$('win_label').define("label", "aaaa");
+	
+
+//			var test = '';
+//			for (i = 0; i < $$(pop_name).config.body.elements.length; i++) {
+ //   				test += JSON.stringify($$(pop_name).config.body.elements[i]);
+//			}
+
+//			$$('text1').setValue(test);
+
+
+			///////////////////////////////////////////////////////////
+//			var test = '';
+//			for (i = 0; i < $$('prop_body').config.elements.length; i++) {
+//  				test += JSON.stringify($$('prop_body').config.elements[i]);
+//			}
+
+//			$$('debug').setValue(test);
+			///////////////////////////////////////////////////////////
+			});
+
+
+
+//	$$('Flow selection').attachEvent('onSelectChange', function(id){
+//			webix.message("Add a flow: " + init_flow[id-1].flow );
+//	});
+
+
+// optimization click function
+
+			var brute_prop=[{ label:"brute force", type:"label" },
+			{ label:"bound min", type:"text", id:"bound_min", value: "0,0,0,0"},
+			{ label:"bound max", type:"text", id:"bound_max", value: "1,1,1,99"}
+			];
+
+			var basin_prop=[
+			{ label:"basin hopping", type:"label" },
+			{ label:"bound min", type:"text", id:"bound_min", value: "0,0,0,0"},
+			{ label:"bound max", type:"text", id:"bound_max", value: "1,1,1,99"},
+			{ label:"minimizer", type:"select", options:[ "L-BFGS-B", "TNC" ,"SLSQP"], value:"L-BFGS-B", id:"minimizer"},
+			{ label:"init value", type:"text", id:"init_value", value: "0.5,0.5,0.5,45"},
+			{ label:"tolerance value", type:"text", id:"tolerance", value: "1e0"},
+			{ label:"iteration", type:"text", id:"iter", value: "100"}
+			];
+			
+			webix.ui({
+				view:"window",move:true,
+				id:"opt_win",
+				height:250,
+				width:350,
+				position:"center",
+			 	head:{
+					view:"toolbar",css:"my_style", cols:[
+						{view:"label", label: "Optimization Property" },
+						{view:"button", label: 'Close', width: 100, align: 'right', click:"$$('opt_win').hide();"}]
+
+				}
+				,	
+				body:{view:"property",  id:"opt_prop_body", width:300,elements:[]}
+
+			});
+
+
+	$$('opt_prop_body').attachEvent("onAfterEditStop", function(state, editor, ignoreUpdate){
+	    if(state.value != state.old){
+		
+	        webix.message("Cell value " + editor.id  + " was changed")
+	    }  
+	});
+
+//	var previous_op_pop_name='';
+	$$('Optimization selection').attachEvent("onSelectChange", function(id){
+
+			webix.message("Select an optimization flow: "+optimization_method[id-1].method);
+			if(id == 1)
+			{
+				$$('opt_prop_body').define("elements",brute_prop);
+				$$('opt_prop_body').refresh();
+			}
+			else
+			{
+				$$('opt_prop_body').define("elements",basin_prop);
+				$$('opt_prop_body').refresh();
+			}
+
+
+			$$('opt_win').show({x:1300, y:380});
+	});
+	
+
+var richtext = webix.ui({
+    view: "richtext",
+    container:"dataE",
+    id:"debug",
+    label:"Mytext",
+    labelPosition:"top"
+});
+
+//webix.ui(
+//	{view:"text", value:"127.0.0.1", label:"dest server:"},
+//	{ view:"button", type: "htmlbutton", container:"dataE" , css: "icon_btn", label: '<span class="webix_icon fa-icon fa-cog"></span><div class="text">Icon Button</div>'});
+	
+
+	//sync call will cause blocking when server can not response
+	var xhr = webix.ajax().sync().get("http://localhost:8888/regist");
+	var server_list = JSON.parse(xhr.responseText)
+
+//	alert(server_list);
+//	alert(server_list.responseText);
+		webix.ui(
+			{ view:"form", container:"dataD", scroll:false, width:600,  align:"left", elements:  [
+//				{ template:"Deplyment", type:"header"},
+//				{ view:"text", value:'127.0.0.1', label:"Target server:" , labelPosition:"top"},
+				{ view:"combo", id:"t_server", label:"Target server:", labelPosition:"top",value:server_list[0], options:server_list},
+				{ view:"button", type: "htmlbutton",  label: '<span class="webix_icon fa-truck"></span><span class="text">   Deploy</span>', click:button_click }
+				//{ view:"button",type: "htmlbutton", label: '<span class="webix_icon fa-icon fa-cog"></span><div class="text">Icon Button</div>', value:"Deploy" , type:"form" }
+			]});
+
+
+function button_click(){
+	var return_str='';
+	var select_model = $$("Model selection").getSelectedId();
+	if(select_model == '')
+	{
+		return_str="Please select a model";
+	}
+	else
+	{
+		select_model = training_method[select_model-1].title;
+	}
+	
+	var model_prop='{';
+	for (i = 1; i < $$('prop_body').config.elements.length; i++) {
+		model_prop += JSON.stringify($$('prop_body').config.elements[i].label) + ":" + JSON.stringify($$('prop_body').config.elements[i].value);
+		
+		if(i != ($$('prop_body').config.elements.length) - 1 )
+		{
+			model_prop+=",";
+		}
+	}
+	model_prop+="}";
+
+	
+	var select_flow = $$("Flow selection").getSelectedId();
+	if(select_flow == '')
+	{
+		return_str="Please select a flow";
+	}
+
+	
+	var select_opt = $$('Optimization selection').getSelectedId();
+
+	var opt_prop = '{';
+
+	for (i = 0; i < $$('opt_prop_body').config.elements.length; i++) {
+		if(i == 0)
+		{
+			opt_prop += '"method":' + JSON.stringify($$('opt_prop_body').config.elements[i].label);
+		}
+		else
+		{
+			opt_prop += JSON.stringify($$('opt_prop_body').config.elements[i].label) + ":" + JSON.stringify($$('opt_prop_body').config.elements[i].value);
+		}
+
+		if(i != ($$('opt_prop_body').config.elements.length) - 1 )
+		{
+			opt_prop+=",";
+		}
+	}
+
+	opt_prop += '}';
+
+	var target_server = $$('t_server').getText();
+
+	
+	
+	var ret_value = {'selected_model':select_model 
+			,'model_prop':model_prop
+			,'selected_flow':select_flow
+			,'selected_opt':select_opt
+			,'opt_prop':opt_prop
+			,'target_server':target_server
+			}
+
+	$$('debug').setValue(return_str + "\n" + JSON.stringify(ret_value));
+
+//	var xhr = new XMLHttpRequest();
+//	xhr.open("POST", "http://localhost:8888/cmd", true);
+//	xhr.send(return_str);
+//	xhr.send("{'sss':'sda'}");
+
+	webix.ajax().header({"Content-type":"text/plain"}).post("http://localhost:8888/cmd", JSON.stringify(ret_value)); 
+//	webix.ajax().header({"Content-type":"application/json"}).post("http://localhost:8888/cmd", JSON.stringify(ret_value) ); 
+
+}
+
+
+        </script>
+	</center>
+    </body>
+</html>

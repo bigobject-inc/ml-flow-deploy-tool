@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css"> 
+    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
+    </head>
+<body>
+<div id="frame" style="height:1000px;width:100%; margin:10px;"></div>
+
+<script type="text/javascript" charset="utf-8">
+			webix.ready(function(){
+				webix.ui({
+					container:"frame",
+					rows:[
+						{ view:"toolbar" , id:"top", elements:[
+							{ view:"segmented", id:"control", options:[
+				                                { id:"1", value:"Deployment"},
+								{ id:"2", value:"Status"},
+								{ id:"3", value:"Remote"}		
+							]},
+						{view:"text", id:"remote_server", label:" Server:",width:400, value:"localhost"},
+
+
+						]},
+
+
+						{ 
+							view:"iframe", id:"frame-body", src:"./test2"
+						}
+					]
+				});
+ 
+				$$("control").attachEvent("onAfterTabClick",function(sid){
+					if(sid == "1")
+					{
+						//$$('frame-body').define("src", sid);
+						$$('frame-body').load("./test2");
+					}
+					else if (sid == "2")
+					{
+						$$('frame-body').load("./status?ip=" + $$("remote_server").getValue());
+
+					}
+					else if (sid == "3")
+					{
+						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":1880");
+					}
+				});
+			});
+</script>
+
+</body>
+</html>
+

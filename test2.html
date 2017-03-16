@@ -102,6 +102,7 @@ webix.ui(
 	var sl_prop=[
 	{ label:"property", type:"label" },
 	{ label:"Model name", type:"text", id:"sl_model_name", value:"testsgd"},
+	{ label:"Normalization" , type:"checkbox", id:"sl_checkbox" , value:true}
 	];
 	
 	//var save_value=["testtf",'5','[10,20]'];
@@ -110,6 +111,7 @@ webix.ui(
 	{ label:"Model name", type:"text", id:"tf_model_name", value: "testtf"},
 	{ label:"class number", type:"text", id:"class_num", value: '5'},
 	{ label:"hidden layer", type:"text", id:"layer", value: '[10,20]'},
+	{ label:"Normalization" , type:"checkbox", id:"sl_checkbox" , value:true}
 	];
 
 	webix.ui({
@@ -265,12 +267,19 @@ var richtext = webix.ui({
 //webix.ui(
 //	{view:"text", value:"127.0.0.1", label:"dest server:"},
 //	{ view:"button", type: "htmlbutton", container:"dataE" , css: "icon_btn", label: '<span class="webix_icon fa-icon fa-cog"></span><div class="text">Icon Button</div>'});
+	
 
+	//sync call will cause blocking when server can not response
+	var xhr = webix.ajax().sync().get("http://localhost:8888/regist");
+	var server_list = JSON.parse(xhr.responseText)
+
+//	alert(server_list);
+//	alert(server_list.responseText);
 		webix.ui(
 			{ view:"form", container:"dataD", scroll:false, width:600,  align:"left", elements:  [
 //				{ template:"Deplyment", type:"header"},
 //				{ view:"text", value:'127.0.0.1', label:"Target server:" , labelPosition:"top"},
-				{ view:"combo", id:"t_server", label:"Target server:", labelPosition:"top",value:"127.0.0.1", options:["127.0.0.1", "192.168.1.170"]},
+				{ view:"combo", id:"t_server", label:"Target server:", labelPosition:"top",value:server_list[0], options:server_list},
 				{ view:"button", type: "htmlbutton",  label: '<span class="webix_icon fa-truck"></span><span class="text">   Deploy</span>', click:button_click }
 				//{ view:"button",type: "htmlbutton", label: '<span class="webix_icon fa-icon fa-cog"></span><div class="text">Icon Button</div>', value:"Deploy" , type:"form" }
 			]});
@@ -350,6 +359,7 @@ function button_click(){
 
 	webix.ajax().header({"Content-type":"text/plain"}).post("http://localhost:8888/cmd", JSON.stringify(ret_value)); 
 //	webix.ajax().header({"Content-type":"application/json"}).post("http://localhost:8888/cmd", JSON.stringify(ret_value) ); 
+	webix.message("Flow deployed.")
 
 }
 
