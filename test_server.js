@@ -30,12 +30,6 @@ app.get('/',function(req,res){
 
 });
 
-app.get('/test', function(req, res){
-	var tmp = '[{"id":"6987566.07ee428","type":"tab","label":"testing"},{"id":"6dd879d0.0ccd38","type":"boserver","z":"","host":"localhost","port":"9090"},{"id":"2191d4c.26ffbac","type":"inject","z":"6987566.07ee428","name":"Start training","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":271.23333740234375,"y":97.23332977294922,"wires":[["4a2e3d9a.e7a81c"]]}]';
-	var result = JSON.parse(tmp);
-	console.log(result[0].type);
-	res.send("ok")
-});
 
 app.get('/status', function(req, res){
 	server_func.status(req, res);

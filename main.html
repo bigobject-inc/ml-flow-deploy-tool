@@ -8,18 +8,21 @@
 <div id="frame" style="height:1000px;width:100%; margin:10px;"></div>
 
 <script type="text/javascript" charset="utf-8">
+			var xhr = webix.ajax().sync().get("http://localhost:8888/regist");
+			var server_list = JSON.parse(xhr.responseText)
 			webix.ready(function(){
 				webix.ui({
 					container:"frame",
 					rows:[
 						{ view:"toolbar" , id:"top", elements:[
 							{ view:"segmented", id:"control", options:[
-				                                { id:"1", value:"Deployment"},
-								{ id:"2", value:"Status"},
-								{ id:"3", value:"Remote node-red"}		
+				                                { id:"1", value:"Deployment tool"},
+								{ id:"2", value:"Remote status"},
+								{ id:"3", value:"Remote node-red"},	
+								{ id:"4", value:"Remote web-bosh"}		
 							]},
-						{view:"text", id:"remote_server", label:" Server:",width:400, value:"localhost"},
-
+//						{view:"text", id:"remote_server", label:" Server:",width:400, value:"localhost"},
+						{ view:"combo", id:"remote_server", label:" Server:",width:400,value:server_list[0], options:server_list},
 
 						]},
 
@@ -44,6 +47,10 @@
 					else if (sid == "3")
 					{
 						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":1880");
+					}
+					else if (sid == "4")
+					{
+						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":9090");
 					}
 				});
 			});

@@ -1,1 +1,1 @@
-{"id":"6987566.07ee428","type":"tab","label":"Template flows"},{"id":"6dd879d0.0ccd38","type":"boserver","z":"","host":"localhost","port":"9090"}
+{"id":"6987566.07ee428","type":"tab","label":"Template flows"},{"id":"6dd879d0.0ccd38","type":"boserver","z":"","host":"10.0.3.15","port":"9090"}
