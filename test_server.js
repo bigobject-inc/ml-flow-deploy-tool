@@ -24,10 +24,22 @@ app.get('/test2',function(req,res){
 	res.sendFile(path.join(__dirname+'/test2.html'));
 });
 
+app.get('/device',function(req,res){
+	res.sendFile(path.join(__dirname+'/device.html'));
+});
+
+
 app.get('/',function(req,res){
 	//res.sendFile(path.join(__dirname+'/test2.html'));
 	res.sendFile(path.join(__dirname+'/main.html'));
 
+});
+
+app.get('/device_info', function(req, res){
+//	server_func.client_status(req, res);
+//	res.sendFile(path.join(__dirname+'/device_info.html'));
+	//server_func.client_status(req, res);
+	res.sendFile(path.join(__dirname+'/device_info.html'));
 });
 
 

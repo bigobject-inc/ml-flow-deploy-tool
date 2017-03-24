@@ -291,7 +291,7 @@ status: function (req, res)
 		body: {"Stmt":"select rank(), * from ml_status_table"}
 	}, function (error, response, body){
 		
-		if(body.Content != undefined && body.Content.content != undefined)
+		if(body!= undefined && body.Content != undefined && body.Content.content != undefined)
 		{
 			console.log(JSON.stringify(body.Content.content));
 			res.render("status", { jsdata:JSON.stringify(body.Content.content)});
@@ -305,6 +305,36 @@ status: function (req, res)
 
 
 
+}
+,
+
+client_status: function (req, res) 
+{
+	//console.log(req.params.ip);
+//	console.log("+++++" + req.query.ip);
+	var request = require('request');
+	
+
+	request({
+		url: 'http://' + req.query.ip + ':9090/cmd',
+		method: "POST",
+		json: true,   // <--Very important!!!
+		body: {"Stmt":"select * from d_tmp last 1"}
+//		body: {"Stmt":"select rank(),cpu_usage, bosrvd_usage, node_red_usage,ml_usage from d_tmp last 30"}
+//		body:{"Stmt":"select rank(),mem_usage,bosrvd_mem_rrs, bosrvd_mem_vms,node_red_mem_rrs , node_red_mem_vms, ml_mem_rrs, ml_mem_vms from d_tmp"}
+	}, function (error, response, body){
+		
+		if(body!= undefined && body.Content != undefined && body.Content.content != undefined)
+		{
+			console.log(JSON.stringify(body.Content.content));
+			res.render("device_info", { jsdata:JSON.stringify(body.Content.content)});
+		}
+		else
+		{
+			res.render("device_info",{jsdata:''});
+		}
+//		res.render("status", { jsdata:body.Content.content});
+	});
 }
 
 };

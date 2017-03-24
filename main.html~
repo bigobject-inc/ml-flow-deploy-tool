@@ -16,10 +16,11 @@
 					rows:[
 						{ view:"toolbar" , id:"top", elements:[
 							{ view:"segmented", id:"control", options:[
-				                                { id:"1", value:"Deployment"},
-								{ id:"2", value:"Status"},
-								{ id:"3", value:"Remote node-red"},	
-								{ id:"4", value:"Remote web-bosh"}		
+				                                { id:"1", value:"Device management"},
+				                                { id:"2", value:"Deployment tool"},
+								{ id:"3", value:"Remote status"},
+								{ id:"4", value:"Remote node-red"},	
+								{ id:"5", value:"Remote web-bosh"}		
 							]},
 //						{view:"text", id:"remote_server", label:" Server:",width:400, value:"localhost"},
 						{ view:"combo", id:"remote_server", label:" Server:",width:400,value:server_list[0], options:server_list},
@@ -36,19 +37,24 @@
 				$$("control").attachEvent("onAfterTabClick",function(sid){
 					if(sid == "1")
 					{
-						//$$('frame-body').define("src", sid);
-						$$('frame-body').load("./test2");
+						$$('frame-body').load("./device");
+						
 					}
 					else if (sid == "2")
 					{
-						$$('frame-body').load("./status?ip=" + $$("remote_server").getValue());
+						$$('frame-body').load("./test2");
 
 					}
 					else if (sid == "3")
 					{
-						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":1880");
+						$$('frame-body').load("./status?ip=" + $$("remote_server").getValue());
+
 					}
 					else if (sid == "4")
+					{
+						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":1880");
+					}
+					else if (sid == "5")
 					{
 						$$('frame-body').load("http://" + $$("remote_server").getValue() + ":9090");
 					}

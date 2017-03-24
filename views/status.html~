@@ -16,7 +16,7 @@
 				container:"tableA",
 				view:"datatable",
 				columns:[
-					{ id:"data1",	header:"name",adjust:"all"},
+					{ id:"data1",	header:"task name",adjust:"all"},
 					{ id:"data2",	header:"cmd", adjust:"all"},
 					{ id:"data3",	header:"starting time", adjust:"all"},
 					{ id:"data4",	header:"updating time", adjust:"all"},
@@ -29,10 +29,6 @@
 
 				datatype:"jsarray",
 				data:{{{ jsdata }}}
-				data:[
-					[1,"The Shawshank Redemption",1994,678790,9.2,1],
-					[2,"The Godfather",1972,511495,9.2,2]
-				]
 			});								
 		});
 		</script>

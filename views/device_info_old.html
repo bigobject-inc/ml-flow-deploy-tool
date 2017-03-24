@@ -1,0 +1,276 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+	    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css"> 
+	    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
+	    <script type="text/javascript" src="http://127.0.0.1:8000/faye/client.js"></script>
+    </head>
+
+  <body>
+
+	<div id="chartDiv" style="width:100%;height:250px;margin:20px"></div>
+	<div id="chartDiv2" style="width:100%;height:200px;margin:20px"></div>
+	<div id="tableA" style="width:100%;height:500px;margin:20px"></div>
+	<script>
+	webix.proxy.faye.client = new Faye.Client('http://127.0.0.1:8000/faye');
+	webix.proxy.faye.clientId = webix.uid();
+	var data = {{{ jsdata }}};
+	var tmp = 100-data[1][5];
+	webix.ui({
+		container: "chartDiv2",
+                    rows:[
+                        {view: "template",
+                            template:"<div style='width:300px;text-align:left'>Disk usage. total disk size:" + Math.round(data[1][4]/1024) + "GB </div>",
+                            height:30
+                        },
+		{
+		id:"pie1",
+		view: "chart",
+		type:"pie",
+		value:"#value#",
+		color:"#color#",
+		label:"#tag#",
+		shadow:0,
+		data:[{value:data[1][5], tag:"used", color: "#ee8489"},{value:tmp, tag:"free", color: "#8984ee"}]
+		}
+		]}
+);
+ 	
+
+
+webix.ui(
+        {
+	 container:"chartDiv",
+            cols:[
+                 {
+           
+		rows:[
+                        {view: "template",
+                            template:"<div style='width:300px;text-align:left'>CPU usage (%)</div>",
+                            height:30
+                        },
+	    {
+	    id: "cpuchart",
+            view:"chart",
+
+            type:"spline",
+		cellWidth: 50,
+         //   value:"#data1#",
+//            radius:0,
+//            border:true,
+            xAxis:{
+                template:"#time#"
+            },
+            yAxis:{
+                start:0,
+                end:100,
+                step:10,
+            },
+	    dynamic: true,
+	    animateDuration: 10 ,
+
+            legend:{
+                values:[{text:"total cpu usage",color:"#1293f8"}
+			,{text:"bosrvd cpu usage",color:"#66cc00"}
+			,{text:"node-red cpu usage",color:"#cc6600"}
+			,{text:"ml cpu usage",color:"#cc0066"}],
+                align:"right",
+                valign:"middle",
+                layout:"y",
+                width: 150,
+                margin: 8
+            },
+ 	series:[
+                {
+                    value:"#totalcpu#",
+                    item:{
+                        borderColor: "#1293f8",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#1293f8",
+                        width:2
+                    },
+
+                },
+                {
+                    value:"#bosrvd#",
+                    item:{
+                        borderColor: "#66cc00",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#66cc00",
+                        width:2
+                    },
+
+                },
+                {
+                    value:"#nodered#",
+                    item:{
+                        borderColor: "#cc6600",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#cc6600",
+                        width:2
+                    },
+
+                },
+                {
+                    value:"#ml#",
+                    item:{
+                        borderColor: "#cc0066",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#cc0066",
+                        width:2
+                    },
+
+                }
+            ],
+            datatype:"jsarray",
+          //  data: {{{ jsdata }}}
+        }
+	]}
+		,
+		{
+		rows:[
+                        {view: "template",
+                            template:"<div style='width:300px;text-align:left'>Memory usage (MB). total memory size:" + Math.round(data[1][2]/1024) + "GB </div>",
+                            height:30
+                        },
+			{
+	    id: "memchart",
+            view:"chart",
+
+            type:"spline",
+		cellWidth: 50,
+         //   value:"#data1#",
+//            radius:0,
+//            border:true,
+            xAxis:{
+                template:"#time#"
+            },
+            yAxis:{
+                start:0,
+                end:200,
+                step:30,
+            },
+	    dynamic: true,
+	    animateDuration: 10 ,
+
+            legend:{
+                values:[{text:"bosrvd memory usage",color:"#1293f8"}
+			,{text:"node-red memory usage",color:"#66cc00"}
+			,{text:"ml memory usage",color:"#cc6600"}],
+                align:"right",
+                valign:"middle",
+                layout:"y",
+                width: 200,
+                margin: 8
+            },
+ 	series:[
+                {
+                    value:"#bosrvdmem#",
+                    item:{
+                        borderColor: "#1293f8",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#1293f8",
+                        width:2
+                    },
+
+                },
+                {
+                    value:"#noderedmem#",
+                    item:{
+                        borderColor: "#66cc00",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#66cc00",
+                        width:2
+                    },
+
+                },
+                {
+                    value:"#mlmem#",
+                    item:{
+                        borderColor: "#cc6600",
+                        color: "#ffffff"
+                    },
+                    line:{
+                        color:"#cc6600",
+                        width:2
+                    },
+
+                }
+            ],
+            datatype:"jsarray",
+          //  data: {{{ jsdata }}}
+        }
+		]//col2 row
+		}
+            ]
+        }
+);
+
+
+/////////////////////////////////////////////////
+		webix.ui({
+				id:"msg_table",
+				container:"tableA",
+				view:"datatable",
+				columns:[
+					{ id:"t_col1",	header:"server",adjust:"all"},
+					{ id:"t_col2",	header:"time", adjust:"all"},
+					{ id:"t_col3",	header:"message", adjust:"all"}
+
+				],
+				autoheight:true,
+				autowidth:true,		
+				url:  "faye->/data", 
+				save: "faye->/data",	
+
+			});			
+///////////////////////////////////////////////
+
+
+
+    var count = 1;
+
+    setInterval(function () {
+        if(count < 100){
+            count++;
+		if(data[count]!=undefined)
+		{
+
+		$$("cpuchart").add({time: count, totalcpu: data[count][1], bosrvd: data[count][6], nodered:data[count][9] , ml:data[count][12]});
+		$$("memchart").add({time: count, bosrvdmem: data[count][7], noderedmem:data[count][10] , mlmem:data[count][13]});
+		
+		/*		
+		$$("msg_table").add({t_col1:data[count][1],t_col2:data[count][2],t_col3:data[count][3] })
+		if($$("msg_table").count() > 10 )
+		{
+			$$("msg_table").remove($$("msg_table").getFirstId());	
+			$$("msg_table").refresh();
+		}
+		*/
+		
+		}
+
+        }
+	else
+	{
+		return;
+
+	}
+    }, 600);
+	   
+ 	</script>
+
+  </body>
+</html>
