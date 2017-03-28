@@ -10,7 +10,6 @@
 
 	<div id="chartDiv" style="width:100%;height:350px;margin:20px"></div>
 	<div id="chartDiv2" style="width:100%;height:200px;margin:20px"></div>
-	<div id="tableA" style="width:100%;height:500px;margin:20px"></div>
 	<script>
 
 	webix.proxy.faye.client = new Faye.Client('http://127.0.0.1:8000/faye');
@@ -74,7 +73,7 @@ webix.ui(
 	    dynamic: true,
 	    animateDuration: 10 ,
 	url:  "faye->/data", 
-	save: "faye->/data",
+//	save: "faye->/data",
             legend:{
                 values:[{text:"total cpu usage",color:"#1293f8"}
 			,{text:"bosrvd cpu usage",color:"#66cc00"}
@@ -177,7 +176,7 @@ webix.ui(
 	    dynamic: true,
 	    animateDuration: 10 ,
 	url:  "faye->/data", 
-	save: "faye->/data",
+//	save: "faye->/data",
 
             legend:{
                 values:[{text:"bosrvd memory usage",color:"#66cc00"}
@@ -247,25 +246,28 @@ webix.ui(
 
 
 /////////////////////////////////////////////////
+/*
 		webix.ui({
 				id:"msg_table",
 				container:"tableA",
 				view:"datatable",
+//				autoConfig:true,
 				columns:[
-					{ id:"timestamp", header:"time",adjust:"all" },
-					{ id:"t_col1",	header:"server",adjust:"all"},
-					{ id:"t_col2",	header:"time", adjust:"all"},
-					{ id:"t_col3",	header:"message", adjust:"all"}
+					{ id:"timestamp", header:"time" ,width:200},
+					{ id:"server",	header:"server",width:100},
+					{ id:"event",	header:"event",width:100},
+					{ id:"msg",	header:"message",width:400}
 
 				],
-				autoheight:true,
-				autowidth:true,		
-				url:  "faye->/data", 
-				save: "faye->/data",	
+//				autoheight:true,
+//				autowidth:true,		
+				url:  "faye->/msg", 
+				save: "faye->/msg",	
 
-			});			
+			});	
+*/		
 ///////////////////////////////////////////////
-
+/*
 	$$("msg_table").attachEvent("onAfterAdd", function(id){
 		if($$("msg_table").count() > 5)
 		{
@@ -273,6 +275,7 @@ webix.ui(
 			$$("msg_table").refresh();
 		}
 	})
+*/
 //	webix.message($$('set_thre1').getValues().thre_text1);
 		
 

@@ -3,26 +3,33 @@
     <head>
 	    <link rel="stylesheet" href="http://cdn.webix.com/edge/webix.css" type="text/css"> 
 	    <script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
+	    <script type="text/javascript" src="http://127.0.0.1:8000/faye/client.js"></script>
     </head>
 
     <body>
-	<h5><div id="layout1" style="height:700px;text-align:center;" ></div></h5>
+	<h5><div id="layout1" style="height:800px;text-align:center;" ></div></h5>
 
         <script type="text/javascript" charset="utf-8">
+	webix.proxy.faye.client = new Faye.Client('http://127.0.0.1:8000/faye');
+	webix.proxy.faye.clientId = webix.uid();
+
 	var xhr = webix.ajax().sync().get("http://localhost:8888/regist");
 	var server_list = JSON.parse(xhr.responseText)
 
-	var device = [{ id:1, title:server_list[0], type:"server", status:'run'},
-			{ id:2, title:"rpi1", type:"rpi",status:'stop'},
-			{ id:3, title:"rpi2", type:"rpi",status:'stop'}];
+	var device = [{ id:1, title:server_list[0], d_type:"server", status:'run'},
+			{ id:2, title:"rpi1", d_type:"rpi",status:'stop'},
+			{ id:3, title:"rpi2", d_type:"rpi",status:'stop'}];
 	var selected = 0;
 
 	webix.ui({
 		container:"layout1", //corresponds to the ID of the div block 
+		rows:[
+		{
 		cols:[
 			{
 			view:"dataview", 
 			width:150,
+			height:650,
 			id:"Devices",
 			container:"layout1",
 			select:true,
@@ -32,15 +39,45 @@
 			},
 			xCount:1, yCount:7,
 
-			template:"<div class='webix_strong'><center><img src='#type#.jpg'></img><br>#title# <img src='#status#.jpg'></img> </center></div> ",
-	//		template:"<div class='webix_strong'><center><img src='#type#.jpg'></img><br>#title# </center></div> ",
+			template:"<div class='webix_strong'><center><img src='#d_type#.jpg'></img><br>#title# <img src='#status#.jpg'></img> </center></div> ",
+	//		template:"<div class='webix_strong'><center><img src='#d_type#.jpg'></img><br>#title# </center></div> ",
 			data:device
 			},
 			{view:"iframe", id:"frame-body", src:"/device_info?ip=" + device[selected].title},
 
-	    ]
+	    ]//cols
+	},	
+ {view:"resizer"}, 
+	{
+				id:"msg_table",
+				view:"datatable",
+//				autoConfig:true,
+				columns:[
+					{ id:"time", header:"time" ,width:200},
+					{ id:"server",	header:"server",width:200},
+					{ id:"type",	header:"type",width:200, template:"<img src='#type#.jpg' width='30' height='30'></img>"},
+					{ id:"event",	header:"event",width:200},
+					{ id:"msg",	header:"message",width:800}
+
+				],
+				height:200,
+//				autoheight:true,
+//				autowidth:true,		
+				url:  "faye->/msg", 
+//				save: "faye->/msg",	
+
+	}
+
+	]//rows
 	});
 
+	$$("msg_table").attachEvent("onAfterAdd", function(id){
+		if($$("msg_table").count() > 5)
+		{
+			$$("msg_table").remove($$("msg_table").getFirstId());	
+			$$("msg_table").refresh();
+		}
+	})
 
         </script>
 
