@@ -36,9 +36,7 @@ app.get('/',function(req,res){
 });
 
 app.get('/device_info', function(req, res){
-//	server_func.client_status(req, res);
-//	res.sendFile(path.join(__dirname+'/device_info.html'));
-	//server_func.client_status(req, res);
+
 	res.sendFile(path.join(__dirname+'/device_info.html'));
 });
 

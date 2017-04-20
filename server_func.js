@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 module.exports = {
+// generate template flows from user's selection
 makeflow: function (req, res) 
 {
 
@@ -20,14 +21,17 @@ makeflow: function (req, res)
 
 	console.log(result.target_server);
 
+	//write to a tmp flow file
 	fs.writeFile('./gen_tmp_flow.json', '[', function(){});
 
+	// load basic flow template
 	var data = fs.readFileSync('./basic_flow.txt', "utf8");
 	fs.appendFile('./gen_tmp_flow.json',data, function(){console.log('write basic flow')});
 
 	//modify training template flow by gui information
 	if(result.selected_flow.indexOf('1') > -1 && result.selected_model != "") 
 	{	
+		//load train template flow
 		var data = fs.readFileSync('./train_flow.txt', "utf8");
 		console.log("from file : " + data);
 		var train_obj = JSON.parse(data);
@@ -61,7 +65,7 @@ makeflow: function (req, res)
 	//modify prediction template flow by gui information
 	if(result.selected_flow.indexOf('2') > -1 && result.selected_model != "") 
 	{
-
+		// load prediction template flow
 		var data = fs.readFileSync('./prediction_flow.txt', "utf8");
 		console.log("from file : " + data);
 		var prediction_obj = JSON.parse(data);
@@ -215,7 +219,7 @@ makeflow: function (req, res)
 	fs.appendFile('./gen_tmp_flow.json', "]", function(){});
 
 	////////////////////////////////////////////
-	// deploy to node-red server
+	// deploy to node-red server by post (curl)
 	////////////////////////////////////////////
 	var exec = require('child_process').exec;
 	var ls = exec('curl -v -X POST http://' + result.target_server + ':1880/flows -H "Content-Type: application/json"  --data "@gen_tmp_flow.json"', function (error, stdout, stderr) {
@@ -279,28 +283,29 @@ addserverlist: function (req, res)
 
 status: function (req, res) 
 {
-	//console.log(req.params.ip);
+
 	console.log(req.query.ip);
 	var request = require('request');
 	
-
+	// get data of the ml status table by http restful
 	request({
 		url: 'http://' + req.query.ip + ':9090/cmd',
 		method: "POST",
-		json: true,   // <--Very important!!!
+		json: true,   
 		body: {"Stmt":"select rank(), * from ml_status_table"}
 	}, function (error, response, body){
 		
 		if(body!= undefined && body.Content != undefined && body.Content.content != undefined)
 		{
 			console.log(JSON.stringify(body.Content.content));
+			// pass the query result to the status page
 			res.render("status", { jsdata:JSON.stringify(body.Content.content)});
 		}
 		else
 		{
 			res.render("status",{jsdata:''});
 		}
-//		res.render("status", { jsdata:body.Content.content});
+
 	});
 
 
